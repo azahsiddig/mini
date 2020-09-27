@@ -29,13 +29,13 @@
                         <th>{{$user->phone}}</th>
                         <th>{{$user->email}}</th>
                         <th>
-                             <img src="{{url('images/U',$user->image)}}" style="width:15%"/>
+                             <img src="{{url('images/U',$user->image)}}" style="width:20%"/>
                         </th>
                         <th>
                             <form action="{{route('user.destroy',$user->id)}}" method="post">
                                 {{csrf_field() }}
                                {{method_field('Delete')}}
-                                <input type="submit" class="btn btn-sm btn-danger" value="Delete">
+                                <input type="submit" class="btn btn-sm btn-danger pull-right" value="Delete">
                             <form>
                             </th>
                       </tr>

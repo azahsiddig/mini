@@ -3,8 +3,18 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Http\Controllers\userorders;
 use App\User;
-class UserssCtrl extends Controller
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\View;
+use App\Order;
+use PDF;
+use Illuminate\Support\Facades\DB;
+
+
+
+
+class userorders extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -13,9 +23,35 @@ class UserssCtrl extends Controller
      */
     public function index()
     {
-        $users = User::all();
 
-        return view('admin.user.index',['users'=>$users]);
+
+    }
+    public function orders($type='')
+    {
+
+        if($type == 'waiting')
+        {
+            $orders = Auth::user()->orders()->where('delivered','0')->get();
+        }elseif($type == 'delivered')
+        {
+            $orders = Auth::user()->orders()->where('delivered','1')->get();
+        }
+        else{
+            $orders = Auth::user()->orders()->get();
+                }
+        return View::make('user.order.index', ['orders' => $orders ]);
+
+    }
+
+    public function getPdf(Request $request, $orderid)
+    {
+        //$orders = Auth::user()->orders()->where('id',$orderid)->get();
+        $orders = Order::find($orderid);
+//dd($orders);
+        $items = DB::table('order_product')->where('order_id', '=', $orderid)->first();
+        //dd($items);
+        $pdf = PDF::loadView('user.order.order-pdf', ['orders'=> $orders,'items'=>$items,'orderid']);
+        return $pdf->download('order_inv.pdf');
     }
 
     /**
@@ -25,7 +61,7 @@ class UserssCtrl extends Controller
      */
     public function create()
     {
-        return view('admin.user.create');
+        //
     }
 
     /**
@@ -36,18 +72,7 @@ class UserssCtrl extends Controller
      */
     public function store(Request $request)
     {
-        $forminput =$request->except('image');
-        //validation
-        $this -> validate($request,['name'=>'required','phone'=>'required','email'=>'required','password'=>'required','image'=>'image|mimes:png,jpg,jpeg|max:10000']);
-        $image = $request->image;
-        if($image)
-        {
-            $imageName = $image->getClientOriginalName();
-            $image -> move('images/U',$imageName);
-            $forminput ['image'] = $imageName;
-        }
-        User::create($forminput);
-        return redirect() -> route('admin.index');
+        //
     }
 
     /**
@@ -92,10 +117,6 @@ class UserssCtrl extends Controller
      */
     public function destroy($id)
     {
-        $users = DB::table('users')->where('id', '=', $id)->first();
-        //$users=User::findOrFail($id);
-        $users->delete();
-
-        return back();
+        //
     }
 }

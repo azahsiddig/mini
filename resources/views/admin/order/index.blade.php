@@ -5,47 +5,47 @@
 @endsection
 
 @section('content')
-
-    <div class="row">
+      <div class="row">
+        @foreach ($orders  as $order )
         <div class="col-md-12">
           <div class="card">
             <div class="card-header">
-              <h3 class="card-title" style="font-weight: bold"> ORDERS </h3>
+              <h3 class="card-title" style="float:left;font-weight: bold"> Orders by {{$order->user->name}} </h3>
+              <form action="{{route('swich.delivered',$order->id)}}" method="POST" >
+                {{csrf_field()}}
+                <label for="delivered">Deliver</label>
+                <input type="checkbox" value="1" name="delivered" {{$order->delivered ==1?"checked":""}}>
+                <input type="submit" value="submit" class="btn btn-sm btn-success">
+              </form>
               <br>
+            <!--form action="{{route('getPdf',$order->id)}}" >
+                <input type="submit" class="btn btn-sm btn-primary pull-right" value="pdf">
+            <form-->
+
+                <!--a class="btn btn-primary" href="{{ url('admin/order/order-pdf') }}">Export to PDF</a-->
             </div>
             <div class="card-body">
-
-              <div class="table-responsive">
-                <table class="table">
-                  <thead class=" text-primary" style="font-size: 18px;color:orange;font-weight: bold;">
-                    <th> O-id </th>
-                    <th> O-Date  </th>
-                    <th> User</th>
-                    <th> O-Net</th>
-                  </thead>
-                  <tbody>
-                    @foreach ($orders  as $order )
+                <br><h4 > items </h4>
+                <div >
+                <table class="table table-bordered" style="font-size:16px">
+                  <tr>
+                    <th> Name  </th>
+                    <th> Quantity </th>
+                    <th> Price</th>
+                  </tr>
+                  @foreach($order-> orderItems as $item)
                     <tr>
-                        <th> {{$order-> O_id}} </th>
-                        <th> {{$order-> O_date}}</th>
-                        <th> {{$order-> user_name}}</th>
-                        <th> ${{$order-> net}}</th>
-
-                        <th>
-                            <form action="{{route('order.destroy',$order->O_id)}}" method="POST">
-                                {{ csrf_field() }}
-                               {{method_field('Delete')}}
-                                <input type="submit" class="btn btn-sm btn-danger" value="Delete">
-                            <form>
-                        </th>
+                        <td> {{$item->name}} </th>
+                        <td> {{$item->pivot->qty}}</th>
+                        <td> {{$item->pivot->total}}</th>
                     </tr>
                     @endforeach
-                  </tbody>
+                    <tr > <th colspan="3" style="text-align:center">Total {{$order->total}} </th></tr>
                 </table>
               </div>
             </div>
           </div>
         </div>
-
+@endforeach
       </div>
 @endsection

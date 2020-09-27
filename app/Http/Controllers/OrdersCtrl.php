@@ -8,6 +8,8 @@ use App\Product;
 use Gloudemans\Shoppingcart\Facades\Cart;
 use Illuminate\Support\Facades\Auth;
 use App\OrderItems;
+use PDF;
+use Illuminate\Support\Facades\DB;
 
 
 class OrdersCtrl extends Controller
@@ -24,6 +26,55 @@ class OrdersCtrl extends Controller
         return view('admin.order.index',['orders'=>$orders]);
     }
 
+    public function orders($type='')
+    {
+        if($type == 'waiting')
+        {
+            $orders = Order::where('delivered','0')->get();
+        }elseif($type == 'delivered')
+        {
+            $orders = Order::where('delivered','1')->get();
+        }
+        else{
+            $orders = Order::all();
+        }
+        return view('admin.order.index',compact('orders'));
+    }
+
+    public function swichdelever(Request $request, $orderid )
+    {
+        $order = Order::find($orderid);
+        if($request->has('delivered'))
+        {
+            $order->delivered = $request->delivered ;
+
+
+        }
+        else{
+            $order->delivered ="0";
+        }
+        $order->save();
+
+        $orders = Order::find($orderid);
+
+        $items = DB::table('order_product')->where('order_id', '=', $orderid)->first();
+        //dd($items);
+        $pdf = PDF::loadView('admin.order.order-pdf', ['orders'=> $orders,'items'=>$items]);
+        return $pdf->download('order_inv.pdf');
+        return back();
+    }
+
+    public function getPdf(Request $request, $orderid)
+    {
+        $orders = Order::find($orderid);
+
+        $items = DB::table('order_product')->where('order_id', '=', $orderid)->first();
+        //dd($items);
+        $pdf = PDF::loadView('admin.order.order-pdf', ['orders'=> $orders,'items'=>$items]);
+        return $pdf->download('order_inv.pdf');
+    }
+
+
     /**
      * Show the form for creating a new resource.
      *
@@ -32,29 +83,29 @@ class OrdersCtrl extends Controller
     //$this-> $counter=1;
     public function create()
     {
-        Order::create([
-            'O_id'=> 'O_',
+        //$invoice_id = 'inv' . (str_pad((int)$latest->invoice_number + 1, 4, '0', STR_PAD_LEFT));
+        $user = Auth::user();
+        $order = $user->orders()->create([
             'O_date'=> date('Y-m-d H:i:s'),
-            'user_name'=> Auth::user()->name,
             'tax'=> Cart::tax(),
             'total'=> Cart::subtotal(),
-            'net'=> Cart::total()
+            'net'=> Cart::total(),
+            'delivered'=> 0,
         ]);
 
         $cartitems= Cart::content();
         foreach ($cartitems as $item)
         {
-            OrderItems::create([
-                'O_id'=> 'O_',
-                'name'=> $item->name,
-                'price'=> $item->price,
-                'quantity'=> $item->qty,
-                'total'=> ($item->price * $item->qty)
+            $order->orderItems()->attach($item->id,[
+            'price'=> $item->price,
+            'qty'=> $item->qty,
+            'total'=> ($item->price * $item->qty)
             ]);
+        }
 
            Cart::destroy();
 
-        }
+
 
        // $counter = $counter +100;
         return redirect('/');
@@ -121,5 +172,10 @@ class OrdersCtrl extends Controller
         $orders_items->delete();
 
         return view("done");
+    }
+
+    public function approve()
+    {
+
     }
 }

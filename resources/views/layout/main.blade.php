@@ -42,6 +42,7 @@
                     <li>
                 </ol>
             </div>
+
         </div>
         @yield('content')
 <!--footer class="footer">

@@ -12,7 +12,7 @@
                 </a>
                 <!-- Sub menu -->
                 <ul>
-                    <li><a href="{{route('user.index')}}">All Users</a></li>
+                    <li><a href="{{url('admin/user')}}">All Users</a></li>
                     <li><a href="{{route('user.create')}}">Add User</a></li>
                 </ul>
             </li>
@@ -34,7 +34,19 @@
                 </a>
                 <!-- Sub menu -->
                 <ul>
-                    <li><a href="{{route('order.index')}}">All Orders</a></li>
+                    <li><a href="{{url('admin/orders')}}">All orders</a></li>
+                    <li><a href="{{url('admin/orders/waiting')}}">waiting orders</a></li>
+                    <li><a href="{{url('admin/orders/delivered')}}">delivered orders</a></li>
+                </ul>
+            </li>
+            <li class="submenu">
+                <a href="#">
+                    <i class="glyphicon glyphicon-list"></i> Invoices
+                    <span class="caret pull-right"></span>
+                </a>
+                <!-- Sub menu -->
+                <ul>
+                    <li><a href="{{url('admin/orders/delivered')}}">all invoices</a></li>
                 </ul>
             </li>
         </ul>

@@ -11,26 +11,26 @@
             {!! Form::open(['route'=>'user.store','method'=> 'post' , 'files'=>true]) !!}
 
             <div class="form-group">
-                {{ Form::label('name', 'Name') }}
+                <h4 style="text-align: left;"> Name: </h4>
                 {{ Form::text('name', null, array('class'=> 'form-control')) }}
             </div>
 
             <div class="form-group">
-                {{ Form::label('phone', 'phone') }}
+                <h4 style="text-align: left;"> Phone: </h4>
                 {{ Form::text('phone', null, array('class'=> 'form-control')) }}
             </div>
 
             <div class="form-group">
-                {{ Form::label('email', 'email') }}
+                <h4 style="text-align: left;"> Email: </h4>
                 {{ Form::text('email', null, array('class'=> 'form-control')) }}
             </div>
             <div class="form-group">
-                {{ Form::label('password', 'password') }}
+                <h4 style="text-align: left;"> Password: </h4>
                 {{ Form::text('password', null, array('class'=> 'form-control')) }}
             </div>
 
             <div class="form-group">
-                {{ Form::label('image', 'Image') }}
+                <h4 style="text-align: left;"> Image: </h4>
                 {{ Form::file('image',  array('class'=> 'form-control')) }}
             </div>
             {{ Form::submit('Create', array('class'=> 'btn btn-success')) }}
